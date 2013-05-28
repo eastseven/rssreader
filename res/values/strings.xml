@@ -6,7 +6,10 @@
     <string name="hello_world">Hello world!</string>
 	<string name="main_navigation_refresh">Refresh</string>
 	<string name="main_content_new">add</string>
+	<string name="main_content_sync">sync</string>
 	
 	<string name="content_uri_rss_feed">content://org.dongq.android.rssreader.provider/rss/feed</string>
 	<string name="content_uri_rss_item">content://org.dongq.android.rssreader.provider/rss/item</string>
+	
+	<string name="config_param_sync_uri">http://42.121.122.100:3001/getAll</string>
 </resources>

@@ -14,12 +14,17 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/main_navigation_refresh"/>
-    
     <item
         android:id="@+id/main_content_new"
         android:icon="@drawable/content_new"
         android:orderInCategory="101"
         android:showAsAction="always"
         android:title="@string/main_content_new"/>
+    <item
+        android:id="@+id/main_content_sync"
+        android:icon="@drawable/content_import_export"
+        android:orderInCategory="102"
+        android:showAsAction="always"
+        android:title="@string/main_content_sync"/>
 
 </menu>

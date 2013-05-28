@@ -1,12 +1,22 @@
 package org.dongq.android.rssreader;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.mcsoxford.rss.RSSFeed;
 import org.mcsoxford.rss.RSSItem;
 import org.mcsoxford.rss.RSSReader;
+import org.mcsoxford.rss.RSSReaderException;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -60,10 +70,12 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	}
 	
 	private void refresh() {
-		//CursorLoader loader = new CursorLoader(MainActivity.this, Uri.parse(getString(R.string.content_uri_rss_feed)), null, null, null, null);
-		//Cursor cursor = loader.loadInBackground();
-		//adapter.changeCursor(cursor);
-		//adapter.notifyDataSetChanged();
+		CursorLoader loader = new CursorLoader(this, Uri.parse(getString(R.string.content_uri_rss_feed)), null, null, null, null);
+		cursor = loader.loadInBackground();
+		adapter.changeCursor(cursor);
+		adapter.notifyDataSetChanged();
+		
+		if(cursor == null) return;
 		
 		if(!cursor.isFirst()) {
 			cursor.moveToFirst();
@@ -75,6 +87,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			updateRssItems(uri);
 			cursor.moveToNext();
 		}
+		
 	}
 	
 	@Override
@@ -91,6 +104,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		case R.id.main_navigation_refresh:
 			refresh();
 			return true;
+			
 		case R.id.main_content_new:
 			rssUri = new EditText(this);
 			rssUri.setText(getUriByRandom());
@@ -116,7 +130,61 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			});
 			form.setNegativeButton("取消", null);
 			form.show();
+			return true;
 			
+		case R.id.main_content_sync:
+			final ProgressDialog syncProgress = ProgressDialog.show(this, "Sync RssFeedUri From Remote", "努力同步中。。。");
+			AsyncTask<String, Void, Object> task = new AsyncTask<String, Void, Object>() {
+
+				@Override
+				protected Object doInBackground(String... params) {
+					Log.d(tag, "1.doInBackground: ");
+					String url = params[0];
+					HttpGet request = new HttpGet(url);
+					DefaultHttpClient client = new DefaultHttpClient();
+					RSSReader reader = new RSSReader();
+					RSSFeed feed = null;
+					try {
+						HttpResponse response = client.execute(request);
+						String json = EntityUtils.toString(response.getEntity());
+						JSONArray array = new JSONArray(json);
+						int size = array.length();
+						for(int index = 0; index < size; index++) {
+							JSONObject o = (JSONObject) array.get(index);
+							String uri = o.getString("uri");
+							if(dao.isDuplicate(uri)) continue;
+							
+							feed = reader.load(uri);
+							dao.saveRssFeed(feed, uri);
+						}
+						
+						return true;
+					} catch (ClientProtocolException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (JSONException e) {
+						e.printStackTrace();
+					} catch (RSSReaderException e) {
+						e.printStackTrace();
+					} finally {
+						reader.close();
+					}
+					
+					return false;
+				}
+				
+				@Override
+				protected void onPostExecute(Object result) {
+					Log.d(tag, "3.onPostExecute");
+					syncProgress.dismiss();
+					if(result.equals(true)) {
+						refresh();
+					}
+				}
+			};
+			
+			task.execute(getString(R.string.config_param_sync_uri));
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
