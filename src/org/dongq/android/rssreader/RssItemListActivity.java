@@ -11,10 +11,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class RssItemListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -22,7 +24,7 @@ public class RssItemListActivity extends ListActivity implements LoaderManager.L
 
 	private SimpleCursorAdapter adapter;
 	
-	private String _uri;
+	private String _uri, _title;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,7 @@ public class RssItemListActivity extends ListActivity implements LoaderManager.L
 		Log.d(tag, "onCreate...");
 
 		_uri = getIntent().getStringExtra("uri");
+		_title = getIntent().getStringExtra("title");
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		String[] from = {RssFeedDao.RSS_ITEM_TITLE};
@@ -40,6 +43,18 @@ public class RssItemListActivity extends ListActivity implements LoaderManager.L
 		getLoaderManager().initLoader(0, null, this);
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.list, menu);
+		TextView view = new TextView(this);
+		view.setText(_title);
+		view.setTextSize(getResources().getDimension(R.dimen.word_size_10));
+		view.setTextColor(getResources().getColor(android.R.color.primary_text_dark));
+		//menu.findItem(R.id.list_title).setTitle(_title);
+		menu.findItem(R.id.list_title).setActionView(view);
+		return true;
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Log.d(tag, "onOptionsItemSelected: " + item);
@@ -70,6 +85,7 @@ public class RssItemListActivity extends ListActivity implements LoaderManager.L
 		intent.putExtra("link", link);
 		intent.putExtra("content", desc);
 		intent.putExtra("uri", _uri);
+		intent.putExtra("title", _title);
 		startActivity(intent);
 	}
 	

@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 
 public class RssContentActivity extends Activity {
 
@@ -15,7 +17,7 @@ public class RssContentActivity extends Activity {
 	
 	private WebView webView;
 	
-	private String feedUri;
+	private String feedUri, feedTitle;
 	private String originalUri, content;
 	private final String mimeType = "text/html";
 	private final String encoding = "UTF-8";
@@ -28,18 +30,30 @@ public class RssContentActivity extends Activity {
 		
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		feedUri = getIntent().getStringExtra("uri");
-		content = getIntent().getStringExtra("content");
+		feedUri     = getIntent().getStringExtra("uri");
+		feedTitle   = getIntent().getStringExtra("title");
+		content     = getIntent().getStringExtra("content");
 		originalUri = getIntent().getStringExtra("link");
 		Log.d(tag, originalUri);
-		//webView.loadUrl(originalUri);
-		//webView.loadDataWithBaseURL(originalUri, null, mimeType, encoding, null);
 		webView.loadDataWithBaseURL(null, content, mimeType, encoding, null);
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.content, menu);
+		//TextView view = new TextView(this);
+		Button view = new Button(this);
+		view.setText("查看原文");
+		view.setTextSize(getResources().getDimension(R.dimen.word_size_08));
+		view.setTextColor(getResources().getColor(android.R.color.primary_text_dark));
+		view.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(originalUri));
+				startActivity(intent);
+			}
+		});
+		menu.findItem(R.id.content_navigation_original).setActionView(view);
 		return true;
 	}
 	
@@ -51,6 +65,7 @@ public class RssContentActivity extends Activity {
 			intent = new Intent(this, RssItemListActivity.class);
 			//intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			intent.putExtra("uri", this.feedUri);
+			intent.putExtra("title", this.feedTitle);
 			startActivity(intent);
 			Log.d(tag, "back to RssItemList");
 			return true;

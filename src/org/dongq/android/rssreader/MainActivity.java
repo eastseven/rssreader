@@ -2,6 +2,7 @@ package org.dongq.android.rssreader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -193,14 +194,17 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Log.d(tag, "onListItemClick: listview="+l+", view="+v+", position="+position+", id="+id);
-		Log.d(tag, "adapter: " + l.getAdapter().getClass());
-		Log.d(tag, "adapter.getitem: "+l.getAdapter().getItem(position));
-		String uri = (String) l.getAdapter().getItem(position);
-		Intent intent = new Intent(this, RssItemListActivity.class);
-		intent.putExtra("uri", uri);
-		startActivity(intent);
+		if(l.getAdapter().getItem(position) instanceof HashMap<?, ?>) {
+			HashMap<String, String> feed = (HashMap<String, String>) l.getAdapter().getItem(position);
+			String uri = feed.get("uri");
+			String title = feed.get("title");
+			Intent intent = new Intent(this, RssItemListActivity.class);
+			intent.putExtra("uri", uri);
+			intent.putExtra("title", title);
+			startActivity(intent);
+		}
 	}
 	
 	final String[] randomUris = {

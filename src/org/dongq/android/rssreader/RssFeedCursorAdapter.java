@@ -1,8 +1,9 @@
 package org.dongq.android.rssreader;
 
+import java.util.HashMap;
+
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.widget.SimpleCursorAdapter;
 
 public class RssFeedCursorAdapter extends SimpleCursorAdapter {
@@ -25,12 +26,13 @@ public class RssFeedCursorAdapter extends SimpleCursorAdapter {
 		if(this.cursor != null) {
 			boolean bln = cursor.moveToPosition(position);
 			if(bln) {
-				String[] names = cursor.getColumnNames();
-				for (String name : names) {
-					int index = cursor.getColumnIndex(name);
-					Log.d(this.getClass().getName(), name + ": " + cursor.getString(index));
-				}
-				return cursor.getString(cursor.getColumnIndex(RssFeedDao.RSS_FEED_URI));
+				String uri   = cursor.getString(cursor.getColumnIndex(RssFeedDao.RSS_FEED_URI));
+				String title = cursor.getString(cursor.getColumnIndex(RssFeedDao.RSS_FEED_TITLE));
+				HashMap<String, String> feed = new HashMap<String, String>();
+				feed.put("uri", uri);
+				feed.put("title", title);
+				
+				return feed;
 			}
 		}
 		return null;
