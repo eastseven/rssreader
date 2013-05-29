@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.http.HttpResponse;
@@ -102,11 +103,13 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		}
 		
 		int count = cursor.getCount();
+		String[] uris = new String[count];
 		for(int index = 0; index < count; index++) {
 			String uri = cursor.getString(cursor.getColumnIndex(RssFeedDao.RSS_FEED_URI));
-			updateRssItems(uri);
+			uris[index] = uri;
 			cursor.moveToNext();
 		}
+		updateRssItems(uris);
 		
 	}
 	
@@ -320,19 +323,21 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		Log.d(tag, "onLoaderReset");
 	}
 	
-	private void updateRssItems(final String uri) {
-		Log.d(tag, "updateRssItems: "+uri);
-		new AsyncTask<String, Void, List<RSSItem>>() {
+	private void updateRssItems(final String[] uris) {
+		
+		new AsyncTask<String, Void, Map<String, List<RSSItem>>>() {
 			@Override
-			protected List<RSSItem> doInBackground(String... params) {
-				String uri = params[0];
+			protected Map<String, List<RSSItem>> doInBackground(String... params) {
 				RSSReader reader = new RSSReader();
+				RSSFeed feed = null;
 				try {
+					Map<String, List<RSSItem>> items = new HashMap<String, List<RSSItem>>();
+					for (String uri : params) {
+						feed = reader.load(uri);
+						items.put(uri, feed.getItems());
+						dao.updateRSSFeed(uri, feed.getLastBuildDate());
+					}
 					
-					RSSFeed feed = reader.load(uri);
-					dao.updateRSSFeed(uri, feed.getLastBuildDate());
-					
-					List<RSSItem> items = feed.getItems();
 					return items;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -343,22 +348,34 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			}
 			
 			@Override
-			protected void onPostExecute(List<RSSItem> result) {
+			protected void onPostExecute(Map<String, List<RSSItem>> result) {
+				if(result == null) {
+					Toast.makeText(MainActivity.this, "无更新内容", Toast.LENGTH_LONG).show();
+					return;
+				}
+				
+				if(result.isEmpty()) {
+					Toast.makeText(MainActivity.this, "无更新内容", Toast.LENGTH_LONG).show();
+					return;
+				}
+				
 				List<RSSItem> newItems = new ArrayList<RSSItem>();
-				for(RSSItem item : result) {
-					boolean isContain = dao.contain(item);
-					if(isContain) continue;
-					newItems.add(item);
+				for(String uri : result.keySet()) {
+					for(RSSItem item : result.get(uri)) {
+						boolean isContain = dao.contain(item);
+						if(isContain) continue;
+						newItems.add(item);
+					}
+					
+					if(!newItems.isEmpty()) {
+						boolean bln = dao.saveRssItems(newItems, uri);
+						Log.d(tag, uri + " update: " + bln + "["+newItems.size()+"]");
+					}
+					newItems.clear();
 				}
-				
-				Log.d(tag, uri + ": items="+result.size()+", newitems="+newItems.size());
-				
-				if(!newItems.isEmpty()) {
-					boolean bln = dao.saveRssItems(newItems, uri);
-					Log.d(tag, uri + " update: " + bln + "["+newItems.size()+"]");
-				}
+				Toast.makeText(MainActivity.this, "更新完毕", Toast.LENGTH_LONG).show();
 			}
 			
-		}.execute(uri);
+		}.execute(uris);
 	}
 }
