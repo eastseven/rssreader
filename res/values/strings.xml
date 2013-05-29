@@ -8,6 +8,11 @@
 	<string name="main_content_new">add</string>
 	<string name="main_content_sync">sync</string>
 	
+	<string name="common_negative_confirm">确定</string>
+	<string name="common_positive_cancel"  >取消</string>
+	<string name="common_negative_yes"     >是</string>
+	<string name="common_positive_no"      >否</string>
+	
 	<string name="content_uri_rss_feed">content://org.dongq.android.rssreader.provider/rss/feed</string>
 	<string name="content_uri_rss_item">content://org.dongq.android.rssreader.provider/rss/item</string>
 	

@@ -30,10 +30,11 @@ public class RssFeedCursorAdapter extends SimpleCursorAdapter {
 			if(bln) {
 				String uri   = cursor.getString(cursor.getColumnIndex(RssFeedDao.RSS_FEED_URI));
 				String title = cursor.getString(cursor.getColumnIndex(RssFeedDao.RSS_FEED_TITLE));
+				String _id   = cursor.getString(cursor.getColumnIndex(RssFeedDao.RSS_FEED_ID));
 				HashMap<String, String> feed = new HashMap<String, String>();
-				feed.put("uri", uri);
 				feed.put("title", title);
-				
+				feed.put("uri",   uri);
+				feed.put("_id",   _id);
 				return feed;
 			}
 		}

@@ -28,6 +28,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -35,6 +36,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,13 +45,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
-public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor>, OnItemLongClickListener {
 	
 	private static final String tag = "RR_MainActivity";
 	
@@ -88,6 +92,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		this.adapter = new RssFeedCursorAdapter(this, R.layout.widget_feed_item, cursor, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		setListAdapter(adapter);
 		getLoaderManager().initLoader(0, null, this);
+		getListView().setOnItemLongClickListener(this);
 	}
 	
 	private void refresh() {
@@ -385,5 +390,50 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			}
 			
 		}.execute(uris);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+		Log.d(tag, "onItemLongClick: parent="+parent+", view="+view+", position="+position+", id="+id);
+		Object o = parent.getItemAtPosition(position);
+		HashMap<String, String> item = (HashMap<String, String>) o;
+		final String originTitle = item.get("title");
+		final String _id = item.get("_id");
+		final EditText title = new EditText(this);
+		title.setText(originTitle);
+		AlertDialog.Builder form = new AlertDialog.Builder(this);
+		form.setTitle("修改");
+		form.setView(title);
+		form.setNegativeButton(R.string.common_positive_cancel, null);
+		form.setPositiveButton(R.string.common_negative_confirm, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				String newTitle = title.getText().toString();
+				if(TextUtils.isEmpty(newTitle)) return;
+				if(newTitle.equals(originTitle)) return;
+				
+				new AsyncTask<String, Void, Object>() {
+					@Override
+					protected Object doInBackground(String... params) {
+						String title = params[0];
+						SQLiteDatabase db = dao.getWritableDatabase();
+						ContentValues values = new ContentValues();
+						values.put(RssFeedDao.RSS_FEED_TITLE, title);
+						Integer rowid = db.update(RssFeedDao.RSS_FEED, values, "_id=?", new String[]{_id});
+						db.close();
+						return rowid;
+					}
+					
+					protected void onPostExecute(Object result) {
+						if(!result.equals(-1)) {
+							refresh();
+						}
+					};
+				}.execute(newTitle);
+			}
+		});
+		form.show();
+		return true;
 	}
 }
