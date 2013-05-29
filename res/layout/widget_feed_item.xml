@@ -12,6 +12,8 @@
         android:text="Feed Title"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <!--
+    -->
     <TextView
         android:id="@+id/widget_feed_item_pub_date"
         android:layout_width="fill_parent"
@@ -19,5 +21,4 @@
         android:gravity="right"
         android:text="Last Build Date"
         android:textAppearance="?android:attr/textAppearanceSmall" />
-	
 </LinearLayout>

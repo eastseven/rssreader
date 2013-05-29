@@ -3,12 +3,14 @@
  */
 package org.dongq.android.rssreader.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.mcsoxford.rss.RSSFeed;
 import org.mcsoxford.rss.RSSItem;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -24,6 +26,9 @@ public class RssFeedDao extends SQLiteOpenHelper {
 
 	private static final String tag = RssFeedDao.class.getSimpleName();
 	
+	@SuppressLint("SimpleDateFormat")
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
 	private static final String DATABASE_NAME    = "d7.rss.reader";
 	private static final int    DATABASE_VERSION = 6;
 	
@@ -31,6 +36,7 @@ public class RssFeedDao extends SQLiteOpenHelper {
 	public static final int RSS_READED = 1;
 	
     public  static final String RSS_FEED                 = "d7_rss_feed";
+    public  static final String RSS_FEED_ID              = "_id";
     public  static final String RSS_FEED_URI             = "rss_feed_uri";
     public  static final String RSS_FEED_TITLE           = "rss_feed_title";
     private static final String RSS_FEED_LINK            = "rss_feed_link";
@@ -38,6 +44,7 @@ public class RssFeedDao extends SQLiteOpenHelper {
     public  static final String RSS_FEED_LAST_BUILD_DATE = "rss_feed_last_build_date";
     
     public static final String RSS_ITEM          = "d7_rss_item";
+    public static final String RSS_ITEM_ID       = "_id";
     public static final String RSS_ITEM_PARENT   = "rss_item_feed_uri";
     public static final String RSS_ITEM_TITLE    = "rss_item_title";
     public static final String RSS_ITEM_LINK     = "rss_item_link";
@@ -99,7 +106,9 @@ public class RssFeedDao extends SQLiteOpenHelper {
 			values.put(RSS_FEED_LINK, feed.getLink().toString());
 			values.put(RSS_FEED_DESC, feed.getDescription());
 			if(feed.getLastBuildDate() != null) {
-				values.put(RSS_FEED_LAST_BUILD_DATE, feed.getLastBuildDate().toString());
+				values.put(RSS_FEED_LAST_BUILD_DATE, sdf.format(feed.getLastBuildDate()));
+			} else {
+				values.put(RSS_FEED_LAST_BUILD_DATE, sdf.format(new Date()));
 			}
 			
 			SQLiteDatabase db = this.getWritableDatabase();

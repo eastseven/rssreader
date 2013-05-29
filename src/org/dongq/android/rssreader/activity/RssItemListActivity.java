@@ -3,9 +3,6 @@ package org.dongq.android.rssreader.activity;
 import java.util.HashMap;
 
 import org.dongq.android.rssreader.R;
-import org.dongq.android.rssreader.R.dimen;
-import org.dongq.android.rssreader.R.id;
-import org.dongq.android.rssreader.R.menu;
 import org.dongq.android.rssreader.adapter.RssItemCursorAdapter;
 import org.dongq.android.rssreader.dao.RssFeedDao;
 import org.dongq.android.rssreader.provider.RssFeedContentProvider;
@@ -43,9 +40,9 @@ public class RssItemListActivity extends ListActivity implements LoaderManager.L
 		_title = getIntent().getStringExtra("title");
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		String[] from = {RssFeedDao.RSS_ITEM_TITLE};
-		int[] to = {android.R.id.text1};
-		this.adapter = new RssItemCursorAdapter(this, android.R.layout.simple_list_item_1, null, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		String[] from = {RssFeedDao.RSS_ITEM_READED, RssFeedDao.RSS_ITEM_TITLE};
+		int[] to = {R.id.widget_item_image, R.id.widget_item_title};
+		this.adapter = new RssItemCursorAdapter(this, R.layout.widget_item, null, from, to, SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		
 		setListAdapter(adapter);
 		getLoaderManager().initLoader(0, null, this);
@@ -82,14 +79,12 @@ public class RssItemListActivity extends ListActivity implements LoaderManager.L
 	@SuppressWarnings("unchecked")
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		HashMap<String, Object> item = (HashMap<String, Object>) l.getAdapter().getItem(position);
-		String link = (String) item.get(RssFeedDao.RSS_ITEM_LINK);
-		String desc = (String) item.get(RssFeedDao.RSS_ITEM_DESC);
-		
-		for(String key : item.keySet()) {
-			Log.d(tag, key + ": " + item.get(key));
-		}
+		String link = (String)  item.get(RssFeedDao.RSS_ITEM_LINK);
+		String desc = (String)  item.get(RssFeedDao.RSS_ITEM_DESC);
+		String _id  = (String) item.get(RssFeedDao.RSS_ITEM_ID);
 		
 		Intent intent = new Intent(this, RssContentActivity.class);
+		intent.putExtra("_id", _id);
 		intent.putExtra("link", link);
 		intent.putExtra("content", desc);
 		intent.putExtra("uri", _uri);
