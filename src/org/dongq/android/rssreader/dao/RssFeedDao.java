@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.dongq.android.rssreader;
+package org.dongq.android.rssreader.dao;
 
 import java.util.Date;
 import java.util.List;

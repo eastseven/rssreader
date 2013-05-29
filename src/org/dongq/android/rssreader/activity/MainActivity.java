@@ -1,4 +1,4 @@
-package org.dongq.android.rssreader;
+package org.dongq.android.rssreader.activity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,6 +11,10 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.dongq.android.rssreader.R;
+import org.dongq.android.rssreader.adapter.RssFeedCursorAdapter;
+import org.dongq.android.rssreader.dao.RssFeedDao;
+import org.dongq.android.rssreader.utils.Constant;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,10 +27,12 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -51,23 +57,36 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	private EditText rssUri;
 	
 	private RssFeedDao dao;
-	private Cursor cursor = null;
+	private Cursor cursor;
+
+	private SharedPreferences sp;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
 		Log.d(tag, "ListActivityMain onCreate...");
+
+		/*
+		 * TODO 在启动页面做首次登录的判断，不是最佳方式，兹待改进，暂时将就用，以后改
+		 * */
+		this.sp = getSharedPreferences(Constant.SP_NAME, Context.MODE_PRIVATE);
+		boolean isFirst = this.sp.getBoolean(Constant.IS_FIRST_LOGIN, true);
+		if(isFirst) {
+			startActivity(new Intent(this, HelloActivity.class));
+		} else {
+			setContentView(R.layout.activity_main);
+			initLoad();
+		}
 		
+	}
+
+	private void initLoad() {
 		this.dao = new RssFeedDao(this);
-		
 		String[] from = {RssFeedDao.RSS_FEED_TITLE, RssFeedDao.RSS_FEED_LAST_BUILD_DATE};
 		int[] to = {R.id.widget_feed_item_title, R.id.widget_feed_item_pub_date};
 		this.adapter = new RssFeedCursorAdapter(this, R.layout.widget_feed_item, cursor, from, to, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		
 		setListAdapter(adapter);
 		getLoaderManager().initLoader(0, null, this);
-		
 	}
 	
 	private void refresh() {

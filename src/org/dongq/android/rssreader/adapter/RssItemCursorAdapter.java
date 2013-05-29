@@ -1,4 +1,4 @@
-package org.dongq.android.rssreader;
+package org.dongq.android.rssreader.adapter;
 
 import java.util.HashMap;
 

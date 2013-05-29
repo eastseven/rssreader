@@ -1,4 +1,6 @@
-package org.dongq.android.rssreader;
+package org.dongq.android.rssreader.provider;
+
+import org.dongq.android.rssreader.dao.RssFeedDao;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

@@ -1,6 +1,8 @@
-package org.dongq.android.rssreader;
+package org.dongq.android.rssreader.adapter;
 
 import java.util.HashMap;
+
+import org.dongq.android.rssreader.dao.RssFeedDao;
 
 import android.content.Context;
 import android.database.Cursor;

@@ -1,6 +1,14 @@
-package org.dongq.android.rssreader;
+package org.dongq.android.rssreader.activity;
 
 import java.util.HashMap;
+
+import org.dongq.android.rssreader.R;
+import org.dongq.android.rssreader.R.dimen;
+import org.dongq.android.rssreader.R.id;
+import org.dongq.android.rssreader.R.menu;
+import org.dongq.android.rssreader.adapter.RssItemCursorAdapter;
+import org.dongq.android.rssreader.dao.RssFeedDao;
+import org.dongq.android.rssreader.provider.RssFeedContentProvider;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;

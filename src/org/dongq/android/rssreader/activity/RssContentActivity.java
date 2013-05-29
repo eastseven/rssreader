@@ -1,4 +1,10 @@
-package org.dongq.android.rssreader;
+package org.dongq.android.rssreader.activity;
+
+import org.dongq.android.rssreader.R;
+import org.dongq.android.rssreader.R.dimen;
+import org.dongq.android.rssreader.R.id;
+import org.dongq.android.rssreader.R.layout;
+import org.dongq.android.rssreader.R.menu;
 
 import android.app.Activity;
 import android.content.Intent;
