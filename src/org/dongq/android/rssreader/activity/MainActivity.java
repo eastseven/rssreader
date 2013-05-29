@@ -129,90 +129,98 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			return true;
 			
 		case R.id.main_content_new:
-			rssUri = new EditText(this);
-			rssUri.setText(getUriByRandom());
-			AlertDialog.Builder form = new AlertDialog.Builder(this);
-			form.setView(rssUri);
-			form.setTitle("Add RSS URI");
-			form.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					String uri = rssUri.getText().toString();
-					Log.d(tag, "uri: " + uri);
-					if(TextUtils.isEmpty(uri)) {
-						Toast.makeText(MainActivity.this, "URI is not null", Toast.LENGTH_LONG).show();
-					} else {
-						boolean bln = dao.isDuplicate(uri);
-						if(bln) {
-							Toast.makeText(MainActivity.this, "重复的URI", Toast.LENGTH_LONG).show();
-						} else {
-							loadFeeds(uri);
-						}
-					}
-				}
-			});
-			form.setNegativeButton("取消", null);
-			form.show();
+			addRssFeedUri();
 			return true;
 			
 		case R.id.main_content_sync:
-			final ProgressDialog syncProgress = ProgressDialog.show(this, "Sync RssFeedUri From Remote", "努力同步中。。。");
-			AsyncTask<String, Void, Object> task = new AsyncTask<String, Void, Object>() {
-
-				@Override
-				protected Object doInBackground(String... params) {
-					Log.d(tag, "1.doInBackground: ");
-					String url = params[0];
-					HttpGet request = new HttpGet(url);
-					DefaultHttpClient client = new DefaultHttpClient();
-					RSSReader reader = new RSSReader();
-					RSSFeed feed = null;
-					try {
-						HttpResponse response = client.execute(request);
-						String json = EntityUtils.toString(response.getEntity());
-						JSONArray array = new JSONArray(json);
-						int size = array.length();
-						for(int index = 0; index < size; index++) {
-							JSONObject o = (JSONObject) array.get(index);
-							String uri = o.getString("uri");
-							if(dao.isDuplicate(uri)) continue;
-							
-							feed = reader.load(uri);
-							dao.saveRssFeed(feed, uri);
-						}
-						
-						return true;
-					} catch (ClientProtocolException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (JSONException e) {
-						e.printStackTrace();
-					} catch (RSSReaderException e) {
-						e.printStackTrace();
-					} finally {
-						reader.close();
-					}
-					
-					return false;
-				}
-				
-				@Override
-				protected void onPostExecute(Object result) {
-					Log.d(tag, "3.onPostExecute");
-					syncProgress.dismiss();
-					if(result.equals(true)) {
-						refresh();
-					}
-				}
-			};
-			
-			task.execute(getString(R.string.config_param_sync_uri));
+			syncRssFeedFromRemote();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 		
+	}
+
+	private void syncRssFeedFromRemote() {
+		final ProgressDialog syncProgress = ProgressDialog.show(this, "Sync RssFeedUri From Remote", "努力同步中。。。");
+		AsyncTask<String, Void, Object> task = new AsyncTask<String, Void, Object>() {
+
+			@Override
+			protected Object doInBackground(String... params) {
+				Log.d(tag, "1.doInBackground: ");
+				String url = params[0];
+				HttpGet request = new HttpGet(url);
+				DefaultHttpClient client = new DefaultHttpClient();
+				RSSReader reader = new RSSReader();
+				RSSFeed feed = null;
+				try {
+					HttpResponse response = client.execute(request);
+					String json = EntityUtils.toString(response.getEntity());
+					JSONArray array = new JSONArray(json);
+					int size = array.length();
+					for(int index = 0; index < size; index++) {
+						JSONObject o = (JSONObject) array.get(index);
+						String uri = o.getString("uri");
+						if(dao.isDuplicate(uri)) continue;
+						
+						feed = reader.load(uri);
+						dao.saveRssFeed(feed, uri);
+					}
+					
+					return true;
+				} catch (ClientProtocolException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (RSSReaderException e) {
+					e.printStackTrace();
+				} finally {
+					reader.close();
+				}
+				
+				return false;
+			}
+			
+			@Override
+			protected void onPostExecute(Object result) {
+				Log.d(tag, "3.onPostExecute");
+				syncProgress.dismiss();
+				if(result.equals(true)) {
+					refresh();
+				}
+			}
+		};
+		
+		task.execute(getString(R.string.config_param_sync_uri));
+	}
+
+	private void addRssFeedUri() {
+		rssUri = new EditText(this);
+		rssUri.setText(getUriByRandom());
+		AlertDialog.Builder form = new AlertDialog.Builder(this);
+		form.setView(rssUri);
+		form.setTitle("Add RSS URI");
+		form.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				String uri = rssUri.getText().toString();
+				Log.d(tag, "uri: " + uri);
+				if(TextUtils.isEmpty(uri)) {
+					Toast.makeText(MainActivity.this, "URI is not null", Toast.LENGTH_LONG).show();
+				} else {
+					boolean bln = dao.isDuplicate(uri);
+					if(bln) {
+						Toast.makeText(MainActivity.this, "重复的URI", Toast.LENGTH_LONG).show();
+					} else {
+						loadFeeds(uri);
+					}
+				}
+			}
+		});
+		form.setNegativeButton("取消", null);
+		form.show();
 	}
 	
 	@Override
