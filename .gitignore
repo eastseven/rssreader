@@ -23,3 +23,5 @@ local.properties
 # Android Studio files
 .idea
 *.iml
+
+push.sh
