@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -16,6 +15,7 @@ import org.dongq.android.rssreader.R;
 import org.dongq.android.rssreader.adapter.RssFeedCursorAdapter;
 import org.dongq.android.rssreader.dao.RssFeedDao;
 import org.dongq.android.rssreader.utils.Constant;
+import org.dongq.android.rssreader.utils.DebugDataUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -203,7 +203,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
 	private void addRssFeedUri() {
 		rssUri = new EditText(this);
-		rssUri.setText(getUriByRandom());
+		rssUri.setText(DebugDataUtil.getUriByRandom());
 		AlertDialog.Builder form = new AlertDialog.Builder(this);
 		form.setView(rssUri);
 		form.setTitle("Add RSS URI");
@@ -240,22 +240,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			intent.putExtra("title", title);
 			startActivity(intent);
 		}
-	}
-	
-	final String[] randomUris = {
-			"http://www.importnew.com/feed",
-			"http://programmer.csdn.net/rss_programmer.html",
-			"http://coolshell.cn/feed",
-			"http://www.raychase.net/feed",
-			"http://blog.sina.com.cn/rss/1581720921.xml",
-			"http://blog.csdn.net/rss.html",
-			"http://www.infoq.com/cn/rss/rss.action?token=b7jzTwJLcjcXt421su1fH4XSWSDSeoBF"
-	};
-	
-	private String getUriByRandom() {
-		Random r = new Random();
-		String uri = randomUris[r.nextInt(randomUris.length)];
-		return uri;
 	}
 	
 	private void loadFeeds(final String uri) {
