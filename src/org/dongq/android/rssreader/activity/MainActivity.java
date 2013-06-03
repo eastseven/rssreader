@@ -58,7 +58,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	private static final String tag = "RR_MainActivity";
 	
 	private SimpleCursorAdapter adapter;
-	private ProgressDialog loading;
+	private ProgressDialog loading, syncProgress;
 	private EditText rssUri;
 	
 	private RssFeedDao dao;
@@ -147,8 +147,15 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	}
 
 	private void syncRssFeedFromRemote() {
-		final ProgressDialog syncProgress = ProgressDialog.show(this, "Sync RssFeedUri From Remote", "努力同步中。。。");
-		AsyncTask<String, Void, Object> task = new AsyncTask<String, Void, Object>() {
+		syncProgress = new ProgressDialog(this);
+		syncProgress.setTitle("Sync RssFeedUri From Remote");
+		syncProgress.setMessage("努力同步中。。。");
+		syncProgress.setProgress(100);
+		syncProgress.setCancelable(true);
+		syncProgress.setIndeterminate(false);
+		syncProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		
+		final AsyncTask<String, Integer, Object> task = new AsyncTask<String, Integer, Object>() {
 
 			@Override
 			protected Object doInBackground(String... params) {
@@ -170,6 +177,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 						
 						feed = reader.load(uri);
 						dao.saveRssFeed(feed, uri);
+						
+						publishProgress((int) ((index / (float) size) * 100));
+						if (isCancelled()) break;
 					}
 					
 					return true;
@@ -189,6 +199,13 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			}
 			
 			@Override
+			protected void onProgressUpdate(Integer... values) {
+				int value = values[0];
+				syncProgress.setProgress(value);
+				Log.d(tag, "onProgressUpdate="+value);
+			}
+			
+			@Override
 			protected void onPostExecute(Object result) {
 				Log.d(tag, "3.onPostExecute");
 				syncProgress.dismiss();
@@ -199,6 +216,15 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		};
 		
 		task.execute(getString(R.string.config_param_sync_uri));
+		
+		syncProgress.setButton(ProgressDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();
+				task.cancel(true);
+			}
+		});
+		syncProgress.show();
 	}
 
 	private void addRssFeedUri() {
