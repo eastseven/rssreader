@@ -140,6 +140,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		case R.id.main_content_sync:
 			syncRssFeedFromRemote();
 			return true;
+		case R.id.main_search:
+			
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}

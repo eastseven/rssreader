@@ -25,3 +25,4 @@ local.properties
 *.iml
 
 #push.sh
+._README.md

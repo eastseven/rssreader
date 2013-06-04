@@ -1,30 +1,29 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <!--
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
-    -->
-
+        android:id="@+id/main_search"
+        android:actionViewClass="android.widget.SearchView"
+        android:icon="@drawable/action_search"
+        android:orderInCategory="1"
+        android:showAsAction="ifRoom|collapseActionView"
+        android:title=""/>
     <item
         android:id="@+id/main_navigation_refresh"
         android:icon="@drawable/navigation_refresh"
         android:orderInCategory="100"
-        android:showAsAction="always"
+        android:showAsAction="never"
         android:title="@string/main_navigation_refresh"/>
     <item
         android:id="@+id/main_content_new"
         android:icon="@drawable/content_new"
         android:orderInCategory="101"
-        android:showAsAction="always"
+        android:showAsAction="never"
         android:title="@string/main_content_new"/>
     <item
         android:id="@+id/main_content_sync"
         android:icon="@drawable/content_import_export"
         android:orderInCategory="102"
-        android:showAsAction="always"
+        android:showAsAction="never"
         android:title="@string/main_content_sync"/>
 
 </menu>
