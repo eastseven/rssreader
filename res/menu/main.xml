@@ -25,5 +25,10 @@
         android:orderInCategory="102"
         android:showAsAction="never"
         android:title="@string/main_content_sync"/>
+    <item
+        android:id="@+id/main_test"
+        android:orderInCategory="103"
+        android:showAsAction="never"
+        android:title="test"/>
 
 </menu>
