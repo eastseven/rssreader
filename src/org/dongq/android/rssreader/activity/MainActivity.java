@@ -213,6 +213,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 					refresh();
 				}
 			}
+			
 		};
 		
 		task.execute(getString(R.string.config_param_sync_uri));
@@ -222,6 +223,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.cancel();
 				task.cancel(true);
+				refresh();
 			}
 		});
 		syncProgress.show();
