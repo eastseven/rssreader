@@ -121,6 +121,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
+		
 		return true;
 	}
 	
@@ -141,7 +142,8 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			syncRssFeedFromRemote();
 			return true;
 		case R.id.main_search:
-			
+			Log.d(tag, ""+item.getActionView());
+			Toast.makeText(this, "搜索功能未开发，敬请期待。。。", Toast.LENGTH_LONG).show();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
