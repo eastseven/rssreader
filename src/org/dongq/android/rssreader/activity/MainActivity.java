@@ -145,6 +145,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 			Log.d(tag, ""+item.getActionView());
 			Toast.makeText(this, "搜索功能未开发，敬请期待。。。", Toast.LENGTH_LONG).show();
 			return true;
+		case R.id.main_test:
+			startActivity(new Intent(this, PullToRefreshListActivity.class));
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}

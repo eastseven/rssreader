@@ -10,7 +10,9 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -43,6 +45,13 @@ public class PullToRefreshListActivity extends ListActivity implements LoaderMan
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				Log.d(tag, "onRefresh");
+				String label = DateUtils.formatDateTime(getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+
+				// Update the LastUpdatedLabel
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+				
+				new GetDataTask().execute();
 			}
 		});
 		this.pullToRefreshListView.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
@@ -94,5 +103,29 @@ public class PullToRefreshListActivity extends ListActivity implements LoaderMan
 	public void onLoaderReset(Loader<Cursor> loader) {
 		this.adapter.swapCursor(null);
 		this.cursor = null;
+	}
+	
+	private class GetDataTask extends AsyncTask<Void, Void, String[]> {
+
+		@Override
+		protected String[] doInBackground(Void... params) {
+			// Simulates a background job.
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String[] result) {
+			//mListItems.addFirst("Added after refresh...");
+			//mAdapter.notifyDataSetChanged();
+
+			// Call onRefreshComplete when the list has been refreshed.
+			pullToRefreshListView.onRefreshComplete();
+
+			super.onPostExecute(result);
+		}
 	}
 }

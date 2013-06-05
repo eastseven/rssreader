@@ -29,6 +29,6 @@
         android:id="@+id/main_test"
         android:orderInCategory="103"
         android:showAsAction="never"
-        android:title="test"/>
+        android:title="@string/main_test"/>
 
 </menu>

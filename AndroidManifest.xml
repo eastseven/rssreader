@@ -32,6 +32,7 @@
         <activity android:name="org.dongq.android.rssreader.activity.RssItemListActivity" />
         <activity android:name="org.dongq.android.rssreader.activity.RssContentActivity" />
         <activity android:name="org.dongq.android.rssreader.activity.HelloActivity" />
+        <activity android:name="org.dongq.android.rssreader.activity.PullToRefreshListActivity" />
     </application>
 
 </manifest>
