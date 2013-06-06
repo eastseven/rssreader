@@ -47,7 +47,6 @@ final class Dates {
     	try {
 			return RFC822_2.parse(date);
 		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
       throw new RSSFault(e);

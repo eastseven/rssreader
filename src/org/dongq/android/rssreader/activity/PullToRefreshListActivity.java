@@ -1,5 +1,8 @@
 package org.dongq.android.rssreader.activity;
 
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+
 import org.dongq.android.rssreader.R;
 import org.dongq.android.rssreader.adapter.RssFeedCursorAdapter;
 import org.dongq.android.rssreader.dao.RssFeedDao;
@@ -21,10 +24,7 @@ import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
 
 public class PullToRefreshListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor>, OnItemLongClickListener {
 
@@ -41,7 +41,7 @@ public class PullToRefreshListActivity extends ListActivity implements LoaderMan
 		setContentView(R.layout.activity_list_refresh);
 		
 		this.pullToRefreshListView = (PullToRefreshListView) findViewById(R.id.pull_refresh_list);
-		this.pullToRefreshListView.setOnRefreshListener(new OnRefreshListener<ListView>() {
+		this.pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				Log.d(tag, "onRefresh");
@@ -54,7 +54,7 @@ public class PullToRefreshListActivity extends ListActivity implements LoaderMan
 				new GetDataTask().execute();
 			}
 		});
-		this.pullToRefreshListView.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+		this.pullToRefreshListView.setOnLastItemVisibleListener(new PullToRefreshBase.OnLastItemVisibleListener() {
 			@Override
 			public void onLastItemVisible() {
 				Log.d(tag, "onLastItemVisible");
@@ -122,8 +122,8 @@ public class PullToRefreshListActivity extends ListActivity implements LoaderMan
 			//mListItems.addFirst("Added after refresh...");
 			//mAdapter.notifyDataSetChanged();
 
-			// Call onRefreshComplete when the list has been refreshed.
-			pullToRefreshListView.onRefreshComplete();
+            // Call onRefreshComplete when the list has been refreshed.
+            pullToRefreshListView.onRefreshComplete();
 
 			super.onPostExecute(result);
 		}

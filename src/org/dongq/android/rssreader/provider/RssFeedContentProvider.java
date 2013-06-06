@@ -52,7 +52,7 @@ public class RssFeedContentProvider extends ContentProvider {
 				break;
 			}
 			
-			return db.query(table, projection, selection, selectionArgs, null, null, sortOrder, "10");
+			return db.query(table, projection, selection, selectionArgs, null, null, sortOrder, "20");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
