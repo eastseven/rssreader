@@ -23,6 +23,7 @@ local.properties
 # Android Studio files
 .idea
 *.iml
+build/
 
 #push.sh
 ._README.md
