@@ -1,6 +1,8 @@
 Rss Reader for Android
 ===
 
+git remote add github https://github.com/eastseven/rssreader.git
+
 dependency library projects:		
 1. git clone https://github.com/eastseven/Android-PullToRefresh.git
 
